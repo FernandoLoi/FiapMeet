@@ -1,5 +1,6 @@
 package com.fiap.FiapMeet.services;
 
+import com.fiap.FiapMeet.dtos.DateUpdateRequestDTO;
 import com.fiap.FiapMeet.dtos.ReserveRequestDTO;
 import com.fiap.FiapMeet.dtos.ReserveResponseDTO;
 import com.fiap.FiapMeet.entities.Reserve;
@@ -7,7 +8,6 @@ import com.fiap.FiapMeet.entities.Room;
 import com.fiap.FiapMeet.mappers.ReserveMapper;
 import com.fiap.FiapMeet.repositories.ReserveRepository;
 import com.fiap.FiapMeet.repositories.RoomRepository;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,15 +42,33 @@ public class ReserveService {
         Reserve reserve = new Reserve();
         Room room = roomRepository.findById(UUID.fromString(String.valueOf(reserveRequestDTO.id_room()))).orElseThrow(() -> new EntityNotFoundException("Room not found"));
 
-        int size = room.getSize();
-        if(size < reserve.getQuantity()){
-            throw new EntityNotFoundException("Room does not support");
-        }
         reserve.setQuantity(reserveRequestDTO.quantity());
         reserve.setId_room(reserveRequestDTO.id_room());
         reserve.setStart_date(reserveRequestDTO.start_date());
         reserve.setEnd_date(reserveRequestDTO.end_date());
 
         return reserveRepository.save(reserve);
+    }
+
+    @Transactional
+    public Reserve updateReserve(UUID id, DateUpdateRequestDTO dateUpdateRequestDTO){
+        Reserve reserve = reserveRepository.findReserveById(id);
+        if (reserve == null){
+            throw new RuntimeException("Reserve does not exists");
+        }
+
+        reserve.setStart_date(dateUpdateRequestDTO.start_date());
+        reserve.setEnd_date(dateUpdateRequestDTO.end_date());
+
+        return reserveRepository.save(reserve);
+    }
+    @Transactional
+    public void  deleteReserve(UUID id){
+        Reserve reserve = reserveRepository.findReserveById(id);
+        if (reserve == null){
+            throw new EntityNotFoundException("Reserve does not exists");
+        }
+
+        reserveRepository.deleteById(id);
     }
 }

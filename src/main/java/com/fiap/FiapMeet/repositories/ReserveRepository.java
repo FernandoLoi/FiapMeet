@@ -10,4 +10,6 @@ import java.util.UUID;
 
 public interface ReserveRepository extends JpaRepository<Reserve, UUID> {
     Page<Reserve> findAll(Pageable pageable);
+    void deleteById (UUID id);
+    Reserve findReserveById(UUID id);
 }

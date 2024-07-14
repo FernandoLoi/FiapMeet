@@ -1,6 +1,7 @@
 package com.fiap.FiapMeet.controllers;
 
 
+import com.fiap.FiapMeet.dtos.DateUpdateRequestDTO;
 import com.fiap.FiapMeet.dtos.ReserveRequestDTO;
 import com.fiap.FiapMeet.dtos.ReserveResponseDTO;
 import com.fiap.FiapMeet.entities.Reserve;
@@ -55,5 +56,21 @@ public class ReserveController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response.toString());
     }
 
+    @PutMapping("/update-reserve/{id}")
+    public ResponseEntity<String> updatePrice(@PathVariable UUID id, @RequestBody @Valid DateUpdateRequestDTO dateUpdateRequestDTO) throws JSONException {
+        Reserve reserve = reserveService.updateReserve(id, dateUpdateRequestDTO);
 
+        JSONObject response = new JSONObject();
+        response.put("message","Reserve successfully updated");
+        return ResponseEntity.status(HttpStatus.OK).body(response.toString());
+    }
+
+    @DeleteMapping("/remove-reserve/{id}")
+    public ResponseEntity<String> deleteReserve(@PathVariable UUID id) throws JSONException {
+        reserveService.deleteReserve(id);
+
+        JSONObject response = new JSONObject();
+        response.put("message","Reserve successfully deleted");
+        return ResponseEntity.status(HttpStatus.OK).body(response.toString());
+    }
 }
